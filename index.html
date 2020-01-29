@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+    <head>
+        <title>
+            Fishing Game
+        </title>
+    </head>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script>
+        // jquery is used to for dom manipulations
+        // angular, react, ... are also responable for doing dom manipulations?
+        $(function () {
+            // io without parameters does auto-discovery
+            // this is how I join namespaces
+            var michigan = io('/michigan');
+            var ontario = io('/ontario');
+            $('#ontario-form').submit(function(e) {
+                // prevents page reloading
+                e.preventDefault();
+                // custom event
+                ontario.emit('cast', ontario.id);
+                // the cast event since I'm casting a net...
+                // false since we don't actually want the form to be submited (http)
+                return false;
+            });
+            $('#michigan-form').submit(function(e) {
+                // prevents page reloading
+                e.preventDefault();
+                // custom event
+                michigan.emit('cast', michigan.id);
+                // the cast event since I'm casting a net...
+                // false since we don't actually want the form to be submited (http)
+                return false;
+            });
+            ontario.on('message', function(msg) {
+                $('#ontario-messages').append($('<li>').text(msg));
+            });
+            michigan.on('message', function(msg) {
+                $('#michigan-messages').append($('<li>').text(msg));
+            });
+        });
+    </script>
+    <body>
+        <div id='ontario-messages'></div>
+        <form id='ontario-form'>
+            <button type='submit'>ontario-button</button>
+        </form>
+        <div id='michigan-messages'></div>
+        <form id='michigan-form'>
+            <button type='submit'>michigan-button</button>
+        </form>
+    </body>
+</html>
